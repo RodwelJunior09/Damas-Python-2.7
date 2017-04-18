@@ -7,8 +7,8 @@ from Game_Class2 import *
 # Create a Function that takes as a parameter a color of the pieces, and prints out the position of all the pieces that are valid moves for that color.
 
 
-Cuadro = pygame.image.load("Cuadro.png")
-Puntero = pygame.image.load("Ficha_amarilla.png")
+Cuadro = pygame.image.load("./Imagenes/Cuadro.png")
+Puntero = pygame.image.load("./Imagenes/Ficha_amarilla.png")
 Display = pygame.display.set_mode((600, 600))
 pygame.display.set_caption("Damas... Players 1 Turn")
 white = (255, 255, 255)
@@ -30,7 +30,13 @@ User_Ficha1, User_Ficha2, User_Ficha3, User_Ficha4, User_Ficha5, User_Ficha6, Us
 Player1_pieces = [User_Ficha1, User_Ficha2, User_Ficha3, User_Ficha4, User_Ficha5, User_Ficha6, User_Ficha7,
                   User_Ficha8, User_Ficha9, User_Ficha10, User_Ficha11, User_Ficha12]
 
-Ficha_op1, Ficha_op2, Ficha_op3, Ficha_op4, Ficha_op5, Ficha_op6, Ficha_op7, Ficha_op8, Ficha_op9, Ficha_op10, Ficha_op11, Ficha_op12 = Op_Ficha(75, 0, Display), Op_Ficha(225, 0, Display), Op_Ficha(375, 0, Display) , Op_Ficha(525, 0, Display), Op_Ficha(0, 75, Display), Op_Ficha(150, 75, Display), Op_Ficha(300, 75, Display), Op_Ficha(450, 75, Display), Op_Ficha(75, 150, Display) ,Op_Ficha(225, 150, Display), Op_Ficha(375, 150, Display), Op_Ficha(525, 150, Display)
+Ficha_op1, Ficha_op2, Ficha_op3, Ficha_op4, Ficha_op5, Ficha_op6, Ficha_op7, Ficha_op8, Ficha_op9, Ficha_op10, Ficha_op11, Ficha_op12 = Op_Ficha(
+    75, 0, Display), Op_Ficha(225, 0, Display), Op_Ficha(375, 0, Display), Op_Ficha(525, 0, Display), Op_Ficha(0, 75,
+                                                                                                               Display), Op_Ficha(
+    150, 75, Display), Op_Ficha(300, 75, Display), Op_Ficha(450, 75, Display), Op_Ficha(75, 150, Display), Op_Ficha(225,
+                                                                                                                    150,
+                                                                                                                    Display), Op_Ficha(
+    375, 150, Display), Op_Ficha(525, 150, Display)
 
 Player2_pieces = [Ficha_op1, Ficha_op2, Ficha_op3, Ficha_op4, Ficha_op5,
                   Ficha_op6, Ficha_op7, Ficha_op8, Ficha_op9, Ficha_op10,
@@ -448,6 +454,7 @@ def Do_not_Eat(Path):
     Display.blit(Cuadro, Path)
     pygame.display.flip()
 
+
 # Esta funcion recorre la accion que si el jugador decide comer o no
 def Eating_Piece(click_pos, Path1, Path2, Path3, Path4, Eat_pos1, Eat_pos2, Eat_pos3, Eat_pos4):
     if Eat_pos1 == click_pos:
@@ -506,6 +513,7 @@ def eat_function(zpos, zpos2):
             Eating_Piece(Tposition2, Path1, Path2, B_Path1, B_Path2, Eat_pos1, Eat_pos2, Eat_pos3, Eat_pos4)
         else:
             Eating_Piece(Tposition2, Path1, Path2, None, None, Eat_pos1, Eat_pos2, None, None)
+
 
 # Esta funcion establece los parametros para ver los caminos de la reina
 def Queen_Path_Moves(qpos):
@@ -636,16 +644,24 @@ def More_than_1_Moves(position, position2, Moves):
     else:
         return False
 
-# Esta funcion desaparece las
-def Disapear_Path_of_Two_Eating_pieces(Position1, Position2):
+
+# Esta funcion desaparece los caminos de las fichas si hay 2 caminos para comer
+def Disapear_Path_of_Two_Eating_pieces(Position1):
     Path1, Path2 = Adayacend_moves(Position1)
     V1, V2, D1, D2 = None, None, None, None
-    Pos_Eat1 , Pos_Eat2 = Adayacend_of_Adayacend(Path1, Path2)
-    for players2 in Player2_pieces:
-        if players2.position == Path1:
-            V1 = True
-        elif players2.position == Path2:
-            V2 = True
+    Pos_Eat1, Pos_Eat2 = Adayacend_of_Adayacend(Path1, Path2)
+    if Turn_Player == 1:
+        for players2 in Player2_pieces:
+            if players2.position == Path1:
+                V1 = True
+            elif players2.position == Path2:
+                V2 = True
+    else:
+        for players in Player1_pieces:
+            if players.position == Path1:
+                V1 = True
+            elif players.position == Path2:
+                V2 = True
 
     if V1 and V2:
         for players in Player1_pieces:
@@ -801,7 +817,7 @@ while not EndGame:
                         Click_Numbers = 1
                     else:
                         Queen_Dissapear_Path(Array_of_Positions[0])
-                        Disapear_Path_of_Two_Eating_pieces(Array_of_Positions[0], pos2)
+                        Disapear_Path_of_Two_Eating_pieces(Array_of_Positions[0])
                         eat_function(Array_of_Positions[0], pos2)
                         Movement(Array_of_Positions[0], pos2)
                         Transform_Queen()
@@ -810,4 +826,3 @@ while not EndGame:
                         EndGame = No_pieces(EndGame)
                         Array_of_Positions = []
                         Turn_Player = Next_Turn(Turn_Player)
-
