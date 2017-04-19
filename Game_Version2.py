@@ -396,9 +396,12 @@ def Find_Eating_Queen_Path(Position):
                 if players2.position == Path4:
                     V4 = True
 
-            Proving_Empty_Space(V1, V2, Eat_Path1, Eat_Path2)
-            Proving_Empty_Space(V3, V4, Eat_Path3, Eat_Path4)
-            return True
+            if V1 is None and V2 is None and V3 is None and V4 is None:
+                return None
+            else:
+                Proving_Empty_Space(V1, V2, Eat_Path1, Eat_Path2)
+                Proving_Empty_Space(V3, V4, Eat_Path3, Eat_Path4)
+                return True
         else:
             Path3, Path4 = back_path(Position)
             Eat_Path3, Eat_Path4 = (Path3[0] - 75, Path3[1] - 75), (Path4[0] + 75, Path4[1] - 75)
@@ -412,13 +415,17 @@ def Find_Eating_Queen_Path(Position):
                 if players.position == Path4:
                     V4 = True
 
-            Proving_Empty_Space(V1, V2, Eat_Path1, Eat_Path2)
-            Proving_Empty_Space(V3, V4, Eat_Path3, Eat_Path4)
-            return True
+            if V1 is None and V2 is None and V3 is None and V4 is None:
+                return None
+            else:
+                Proving_Empty_Space(V1, V2, Eat_Path1, Eat_Path2)
+                Proving_Empty_Space(V3, V4, Eat_Path3, Eat_Path4)
+                return True
 
 
 # Aqui se esta hallando el camino de comer
 def Find_Eating_Path(Position):
+    V1, V2, V3, V4 = None, None, None, None
     if Position is None:
         return None
     Path1, Path2 = Adayacend_moves(Position)
@@ -431,8 +438,11 @@ def Find_Eating_Path(Position):
             if players2.position == Path2:
                 V2 = True
 
-        Proving_Empty_Space(V1, V2, Eat_Path1, Eat_Path2)
-        return True
+        if V1 is None and V2 is None:
+            return None
+        else:
+            Proving_Empty_Space(V1, V2, Eat_Path1, Eat_Path2)
+            return True
     else:
         for players in Player1_pieces:
             if players.position == Path1:
@@ -440,8 +450,11 @@ def Find_Eating_Path(Position):
             if players.position == Path2:
                 V2 = True
 
-        Proving_Empty_Space(V1, V2, Eat_Path1, Eat_Path2)
-        return True
+        if V1 is None and V2 is None:
+            return None
+        else:
+            Proving_Empty_Space(V1, V2, Eat_Path1, Eat_Path2)
+            return True
 
 
 # Esta funcion elimina el puntero del comer
@@ -500,10 +513,14 @@ def eat_function(zpos, zpos2):
         Eat_pos1, Eat_pos2 = Adayacend_of_Adayacend(Path1, Path2)
         if checking_the_queens(Tposition):
             B_Path1, B_Path2 = back_path(zpos)
-            Eat_pos3, Eat_pos4 = (B_Path1[0] - 75, B_Path1[1] + 75), (B_Path2[0] + 75, B_Path2[1] + 75)
-            Eating_Piece(Tposition2, Path1, Path2, B_Path1, B_Path2, Eat_pos1, Eat_pos2, Eat_pos3, Eat_pos4)
+            for players2 in Player2_pieces:
+                if players2.position == Path1 or players2.position == Path2 or players2.position == B_Path1 or players2.position == B_Path2:
+                    Eat_pos3, Eat_pos4 = (B_Path1[0] - 75, B_Path1[1] + 75), (B_Path2[0] + 75, B_Path2[1] + 75)
+                    Eating_Piece(Tposition2, Path1, Path2, B_Path1, B_Path2, Eat_pos1, Eat_pos2, Eat_pos3, Eat_pos4)
         else:
-            Eating_Piece(Tposition2, Path1, Path2, None, None, Eat_pos1, Eat_pos2, None, None)
+            for players2 in Player2_pieces:
+                if Path1 == players2.position or Path2 == players2.position:
+                    Eating_Piece(Tposition2, Path1, Path2, None, None, Eat_pos1, Eat_pos2, None, None)
     else:
         Path1, Path2 = Adayacend_moves(zpos)
         Eat_pos1, Eat_pos2 = Adayacend_of_Adayacend(Path1, Path2)
@@ -627,6 +644,9 @@ def More_than_1_Moves(position, position2, Moves):
     Real_position2 = True_position(position2[0], position2[1], Moves)
     if Find_Eating_Path(position):
         return None
+    elif checking_the_queens(Real_position):
+        if Find_Eating_Queen_Path(position):
+            return None
     if Real_position is None:
         Real_position = True_position(position[0], position[1], Wrong_Squares())
     elif Real_position2 is None:
@@ -644,6 +664,23 @@ def More_than_1_Moves(position, position2, Moves):
     else:
         return False
 
+
+def Double_Jump(pos1, pos2):
+    Tpos1 = True_position(pos[0], pos[1], memorize_board())
+    Tpos2 = True_position(pos2[0],pos2[1],memorize_board())
+    if checking_the_queens(Tpos2):
+        if Find_Eating_Queen_Path(Tpos1):
+            if Find_Eating_Queen_Path(Tpos2):
+                return True
+            else:
+                return None
+        else:
+            return None
+    elif Find_Eating_Path(Tpos1):
+        if Find_Eating_Path(Tpos2):
+            return True
+        else:
+            return None
 
 # Esta funcion desaparece los caminos de las fichas si hay 2 caminos para comer
 def Disapear_Path_of_Two_Eating_pieces(Position1):
@@ -706,14 +743,14 @@ def Select_Another_piece(pos1, pos2):
     if Turn_Player == 1:
         for Space2 in Player2_pieces:
             if Space2.position == True_pos2:
-                print "Movement INVALID"
+                pygame.display.set_caption("Damas...Movement Invalid...Play Again")
                 Error_Moves(pos1)
                 Error_Path_Moves(pos1)
                 return True
     else:
         for Space in Player1_pieces:
             if Space.position == True_pos2:
-                print "Movement INVALID"
+                pygame.display.set_caption("Damas...Movement Invalid... Play Again")
                 Error_Moves(pos1)
                 Error_Path_Moves(pos1)
                 return True
@@ -747,7 +784,7 @@ def touch_another_piece(Position):
             if players.position == Tposition:
                 return False
 
-        print "Movement INVALID"
+        pygame.display.set_caption("Damas...Movement Invalid..Play Again")
         Error_Path_Moves(Position)
         Error_Moves(Position)
         return True
@@ -756,7 +793,7 @@ def touch_another_piece(Position):
             if players2.position == Tposition:
                 return False
 
-        print "Movement INVALID"
+        pygame.display.set_caption("Damas...Movement Invalid...Play Again")
         Error_Path_Moves(Position)
         Error_Moves(Position)
         return True
@@ -810,7 +847,7 @@ while not EndGame:
                     Decision3 = piece_in_the_middle(pos2)
                     Decision4 = move_backwards(Array_of_Positions[0], pos2)
                     if Decision1 or Decision2 or Decision3 or Decision4:
-                        print "Movement INVALID"
+                        pygame.display.set_caption("Damas... Movement Invalid Play Again")
                         Error_Path_Moves(Array_of_Positions[0])
                         Error_Moves(Array_of_Positions[0])
                         Array_of_Positions = []
@@ -821,8 +858,13 @@ while not EndGame:
                         eat_function(Array_of_Positions[0], pos2)
                         Movement(Array_of_Positions[0], pos2)
                         Transform_Queen()
-                        Click_Numbers = 1
                         eliminate_path(Array_of_Positions[0])
                         EndGame = No_pieces(EndGame)
+                        Double = Double_Jump(Array_of_Positions[0],pos2)
                         Array_of_Positions = []
-                        Turn_Player = Next_Turn(Turn_Player)
+                        Click_Numbers = 1
+                        if Double:
+                            pygame.display.set_caption("Damas...Doble Salto Requerido")
+                            pass
+                        else:
+                            Turn_Player = Next_Turn(Turn_Player)
