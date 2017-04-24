@@ -306,7 +306,7 @@ def move_backwards(zpos, zpos2):
 # Aqui se imprime el camino para comer
 def Print_Eating_Path(Empty_Space1, Empty_Space2, Path1, Path2):
     if Empty_Space1 is False and Empty_Space2 is False:
-        return
+        return False
     if Empty_Space1 is None and Empty_Space2 is None:
         Display.blit(Puntero, Path1)
         Display.blit(Puntero, Path2)
@@ -340,7 +340,6 @@ def Two_paths_ocuped(Eat1, Eat2):
         for players2 in Player2_pieces:
             if Eat1 == players.position or players2.position == Eat1:
                 V1 = False
-
     for players in Player1_pieces:
         for players2 in Player2_pieces:
             if Eat2 == players2.position or players.position == Eat2:
@@ -375,7 +374,8 @@ def Proving_Empty_Space(Path1, Path2, Eat1, Eat2):
         One_Path_Ocuped(1, Eat1, Eat2)
     elif Path1 is None and Path2:
         One_Path_Ocuped(2, Eat1, Eat2)
-
+    else:
+        return False
 
 def Find_Eating_Queen_Path(Position):
     Tpos = True_position(Position[0], Position[1], memorize_board())
@@ -425,36 +425,34 @@ def Find_Eating_Queen_Path(Position):
 
 # Aqui se esta hallando el camino de comer
 def Find_Eating_Path(Position):
-    V1, V2, V3, V4 = None, None, None, None
     if Position is None:
         return None
-    Path1, Path2 = Adayacend_moves(Position)
-    Eat_Path1, Eat_Path2 = Adayacend_of_Adayacend(Path1, Path2)
-    V1, V2 = None, None
+    A_Path1, A_Path2 = Adayacend_moves(Position)
+    E_Path1, E_Path2 = Adayacend_of_Adayacend(A_Path1, A_Path2)
+    Ocup_Path1, Ocup_Path2 = None, None
     if Turn_Player == 1:
         for players2 in Player2_pieces:
-            if players2.position == Path1:
-                V1 = True
-            if players2.position == Path2:
-                V2 = True
-
-        if V1 is None and V2 is None:
+            if players2.position == A_Path1:
+                Ocup_Path1 = True
+            elif players2.position == A_Path2:
+                Ocup_Path2 = True
+        if Ocup_Path1 is None and Ocup_Path2 is None:
             return None
         else:
-            Proving_Empty_Space(V1, V2, Eat_Path1, Eat_Path2)
+            Proving_Empty_Space(Ocup_Path1, Ocup_Path2, E_Path1, E_Path2)
             return True
     else:
         for players in Player1_pieces:
-            if players.position == Path1:
-                V1 = True
-            if players.position == Path2:
-                V2 = True
-
-        if V1 is None and V2 is None:
+            if players.position == A_Path1:
+                Ocup_Path1 = True
+            elif players.position == A_Path2:
+                Ocup_Path2 = True
+        if Ocup_Path1 is None and Ocup_Path2 is None:
             return None
         else:
-            Proving_Empty_Space(V1, V2, Eat_Path1, Eat_Path2)
+            Proving_Empty_Space(Ocup_Path1, Ocup_Path2, E_Path1, E_Path2)
             return True
+
 
 
 # Esta funcion elimina el puntero del comer
@@ -664,23 +662,89 @@ def More_than_1_Moves(position, position2, Moves):
     else:
         return False
 
-
-def Double_Jump(pos1, pos2):
-    Tpos1 = True_position(pos[0], pos[1], memorize_board())
-    Tpos2 = True_position(pos2[0],pos2[1],memorize_board())
-    if checking_the_queens(Tpos2):
-        if Find_Eating_Queen_Path(Tpos1):
-            if Find_Eating_Queen_Path(Tpos2):
-                return True
-            else:
-                return None
-        else:
+# Esta funcion busca si la ficha puede dar el doble salto 
+def Find_Path(S_Position):
+    if S_Position is None:
+        return None
+    A_Path1, A_Path2 = Adayacend_moves(S_Position)
+    E_Path1, E_Path2 = Adayacend_of_Adayacend(A_Path1, A_Path2)
+    Ocup_Path1, Ocup_Path2, Ocuped_Epath1, Ocuped_Epath2 = None, None, None, None
+    if Turn_Player == 1:
+        for players2 in Player2_pieces:
+            if players2.position == A_Path1:
+                Ocup_Path1 = True
+            elif players2.position == A_Path2:
+                Ocup_Path2 = True
+        if Ocup_Path1 is None and Ocup_Path2 is None:
             return None
-    elif Find_Eating_Path(Tpos1):
-        if Find_Eating_Path(Tpos2):
+        else:
+            for players in Player1_pieces:
+                if players.position == A_Path1:
+                    Ocup_Path1 = True
+                elif players.position == A_Path2:
+                    Ocup_Path2 = True
+            if Ocup_Path1 is None and Ocup_Path2 is None:
+                return None
+            elif Ocup_Path1 and Ocup_Path2 is None:
+                for players in Player1_pieces:
+                    for players2 in Player2_pieces:
+                        if players.position == E_Path1 or players2.position == E_Path1:
+                            Ocuped_Epath1 = True
+            elif Ocup_Path1 is None and Ocup_Path2:
+                for players in Player1_pieces:
+                    for players2 in Player2_pieces:
+                        if players.position == E_Path2 or players2.position == E_Path2:
+                            Ocup_Path2 = True
+            elif Ocup_Path1 and Ocup_Path2:
+                for players in Player1_pieces:
+                    for players2 in Player2_pieces:
+                        if players.position == E_Path2 or players2.position == E_Path2:
+                            Ocup_Path2 = True
+                        if players.position == E_Path1 or players2.position == E_Path1:
+                            Ocup_Path1 = True
+    else:
+        for players in Player1_pieces:
+            if players.position == A_Path1:
+                Ocup_Path1 = True
+            elif players.position == A_Path2:
+                Ocup_Path2 = True
+        if Ocup_Path1 is None and Ocup_Path2 is None:
+            return None
+        elif Ocup_Path1 and Ocup_Path2 is None:
+            for players in Player1_pieces:
+                for players2 in Player2_pieces:
+                    if players.position == E_Path1 or players2.position == E_Path1:
+                        Ocuped_Epath1 = True
+        elif Ocup_Path1 is None and Ocup_Path2:
+            for players in Player1_pieces:
+                for players2 in Player2_pieces:
+                    if players.position == E_Path2 or players2.position == E_Path2:
+                        Ocuped_Epath2 = True
+        elif Ocup_Path1 and Ocup_Path2:
+            for players in Player1_pieces:
+                for players2 in Player2_pieces:
+                    if players.position == E_Path2 or players2.position == E_Path2:
+                        Ocuped_Epath2 = True
+                    if players.position == E_Path1 or players2.position == E_Path1:
+                        Ocuped_Epath1 = True
+
+    if Ocuped_Epath1 and Ocuped_Epath2:
+        return False
+    else:
+        return True
+
+# Funcion que autoriza el doble salto en la ficha
+def Double_Jump(Player_Eat, pos2):
+    Tpos2 = True_position(pos2[0],pos2[1],memorize_board())
+    if Player_Eat:
+        if Find_Path(Tpos2):
             return True
         else:
-            return None
+            return False
+    else:
+        return False
+
+
 
 # Esta funcion desaparece los caminos de las fichas si hay 2 caminos para comer
 def Disapear_Path_of_Two_Eating_pieces(Position1):
@@ -716,6 +780,7 @@ def Disapear_Path_of_Two_Eating_pieces(Position1):
             pygame.display.flip()
         else:
             Display.blit(Cuadro, Pos_Eat1)
+            pygame.display.flip()
             Display.blit(Cuadro, Pos_Eat2)
             pygame.display.flip()
 
@@ -738,7 +803,6 @@ def Next_Turn(Turn):
 
 # Si el jugador clickea otra ficha que no sea la suyas
 def Select_Another_piece(pos1, pos2):
-    # True_pos = True_position(pos1[0], pos1[1], memorize_board())
     True_pos2 = True_position(pos2[0], pos2[1], memorize_board())
     if Turn_Player == 1:
         for Space2 in Player2_pieces:
@@ -855,12 +919,13 @@ while not EndGame:
                     else:
                         Queen_Dissapear_Path(Array_of_Positions[0])
                         Disapear_Path_of_Two_Eating_pieces(Array_of_Positions[0])
+                        Player_Eat = Find_Path(Array_of_Positions[0])
                         eat_function(Array_of_Positions[0], pos2)
                         Movement(Array_of_Positions[0], pos2)
                         Transform_Queen()
                         eliminate_path(Array_of_Positions[0])
                         EndGame = No_pieces(EndGame)
-                        Double = Double_Jump(Array_of_Positions[0],pos2)
+                        Double = Double_Jump(Player_Eat, pos2)
                         Array_of_Positions = []
                         Click_Numbers = 1
                         if Double:
