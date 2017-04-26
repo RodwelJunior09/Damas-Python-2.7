@@ -662,7 +662,7 @@ def More_than_1_Moves(position, position2, Moves):
     else:
         return False
 
-# Esta funcion busca si la ficha puede dar el doble salto 
+# Esta funcion busca si la ficha puede dar el doble salto
 def Find_Path(S_Position):
     if S_Position is None:
         return None
@@ -673,40 +673,47 @@ def Find_Path(S_Position):
         for players2 in Player2_pieces:
             if players2.position == A_Path1:
                 Ocup_Path1 = True
-            elif players2.position == A_Path2:
+            if players2.position == A_Path2:
                 Ocup_Path2 = True
         if Ocup_Path1 is None and Ocup_Path2 is None:
             return None
         else:
-            for players in Player1_pieces:
-                if players.position == A_Path1:
-                    Ocup_Path1 = True
-                elif players.position == A_Path2:
-                    Ocup_Path2 = True
-            if Ocup_Path1 is None and Ocup_Path2 is None:
-                return None
-            elif Ocup_Path1 and Ocup_Path2 is None:
+            if Ocup_Path1 and Ocup_Path2 is None:
                 for players in Player1_pieces:
                     for players2 in Player2_pieces:
                         if players.position == E_Path1 or players2.position == E_Path1:
                             Ocuped_Epath1 = True
-            elif Ocup_Path1 is None and Ocup_Path2:
+                if Ocuped_Epath1:
+                    return False
+                else:
+                    return True
+            if Ocup_Path1 is None and Ocup_Path2:
                 for players in Player1_pieces:
                     for players2 in Player2_pieces:
                         if players.position == E_Path2 or players2.position == E_Path2:
-                            Ocup_Path2 = True
-            elif Ocup_Path1 and Ocup_Path2:
+                            Ocuped_Epath2 = True
+                if Ocuped_Epath2:
+                    return False
+                else:
+                    return True
+            if Ocup_Path1 and Ocup_Path2:
                 for players in Player1_pieces:
                     for players2 in Player2_pieces:
                         if players.position == E_Path2 or players2.position == E_Path2:
-                            Ocup_Path2 = True
+                            Ocuped_Epath2 = True
                         if players.position == E_Path1 or players2.position == E_Path1:
-                            Ocup_Path1 = True
+                            Ocuped_Epath1 = True
+                if Ocuped_Epath2 and Ocuped_Epath1:
+                    return False
+                elif Ocuped_Epath2 and Ocuped_Epath1 is None:
+                    return True
+                elif Ocuped_Epath1 and Ocuped_Epath2 is None:
+                    return True
     else:
         for players in Player1_pieces:
             if players.position == A_Path1:
                 Ocup_Path1 = True
-            elif players.position == A_Path2:
+            if players.position == A_Path2:
                 Ocup_Path2 = True
         if Ocup_Path1 is None and Ocup_Path2 is None:
             return None
@@ -715,11 +722,19 @@ def Find_Path(S_Position):
                 for players2 in Player2_pieces:
                     if players.position == E_Path1 or players2.position == E_Path1:
                         Ocuped_Epath1 = True
+            if Ocuped_Epath1:
+                return False
+            else:
+                return True
         elif Ocup_Path1 is None and Ocup_Path2:
             for players in Player1_pieces:
                 for players2 in Player2_pieces:
                     if players.position == E_Path2 or players2.position == E_Path2:
                         Ocuped_Epath2 = True
+            if Ocuped_Epath2:
+                return False
+            else:
+                return True
         elif Ocup_Path1 and Ocup_Path2:
             for players in Player1_pieces:
                 for players2 in Player2_pieces:
@@ -727,17 +742,17 @@ def Find_Path(S_Position):
                         Ocuped_Epath2 = True
                     if players.position == E_Path1 or players2.position == E_Path1:
                         Ocuped_Epath1 = True
-
-    if Ocuped_Epath1 and Ocuped_Epath2:
-        return False
-    else:
-        return True
+            if Ocuped_Epath1 and Ocuped_Epath2:
+                return False
+            elif Ocuped_Epath1 and Ocuped_Epath2 is None:
+                return True
+            elif Ocuped_Epath1 is None and Ocuped_Epath2:
+                return True
 
 # Funcion que autoriza el doble salto en la ficha
-def Double_Jump(Player_Eat, pos2):
-    Tpos2 = True_position(pos2[0],pos2[1],memorize_board())
+def Double_Jump(Player_Eat, Second_pos):
     if Player_Eat:
-        if Find_Path(Tpos2):
+        if Find_Path(Second_pos):
             return True
         else:
             return False
