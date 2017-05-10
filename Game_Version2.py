@@ -1,7 +1,7 @@
 from Game_Class2 import *
 
-# Create the Structure for the Checkers Board(only the board, not the pieces). (See Image at the top)
-# Create a Function that creates all the pieces located in the starting position on the board of question 1.
+# Create the Structure for the Checkers Board(only the board, not the pieces). (See Image at the top) Done!!
+# Create a Function that creates all the pieces located in the starting position on the board of question 1. Done!!
 # Create a function that takes as a parameter a piece on the board, and prints out all the possible moves.
 # Create a Function that takes as a parameter a piece on the board, and prints out all the possible jumps.
 # Create a Function that takes as a parameter a color of the pieces, and prints out the position of all the pieces that are valid moves for that color.
@@ -20,23 +20,20 @@ EndGame = False
 Turn_Player = 1
 print "Player 1 Turn"
 
-User_Ficha1, User_Ficha2, User_Ficha3, User_Ficha4, User_Ficha5, User_Ficha6, User_Ficha7, User_Ficha8, User_Ficha9, User_Ficha10, User_Ficha11, User_Ficha12 = Ficha(
-    0, 525, Display), Ficha(150, 525, Display), Ficha(300, 525, Display), Ficha(450, 525, Display), Ficha(75, 450,
-                                                                                                          Display), Ficha(
-    225, 450, Display), Ficha(375, 450, Display), Ficha(525, 450, Display), Ficha(0, 375, Display), Ficha(150, 375,
-                                                                                                          Display), Ficha(
-    300, 375, Display), Ficha(450, 375, Display)
+User_Ficha1, User_Ficha2, User_Ficha3, User_Ficha4, \
+User_Ficha5, User_Ficha6, User_Ficha7, User_Ficha8, \
+User_Ficha9, User_Ficha10, User_Ficha11, User_Ficha12 = Ficha("Naranja"), Ficha("Naranja"), Ficha("Naranja"), Ficha("Naranja"), \
+                                                        Ficha("Naranja"), Ficha("Naranja"), Ficha("Naranja"), Ficha("Naranja"), \
+                                                        Ficha("Naranja"), Ficha("Naranja"), Ficha("Naranja"), Ficha("Naranja")
 
 Player1_pieces = [User_Ficha1, User_Ficha2, User_Ficha3, User_Ficha4, User_Ficha5, User_Ficha6, User_Ficha7,
                   User_Ficha8, User_Ficha9, User_Ficha10, User_Ficha11, User_Ficha12]
 
-Ficha_op1, Ficha_op2, Ficha_op3, Ficha_op4, Ficha_op5, Ficha_op6, Ficha_op7, Ficha_op8, Ficha_op9, Ficha_op10, Ficha_op11, Ficha_op12 = Op_Ficha(
-    75, 0, Display), Op_Ficha(225, 0, Display), Op_Ficha(375, 0, Display), Op_Ficha(525, 0, Display), Op_Ficha(0, 75,
-                                                                                                               Display), Op_Ficha(
-    150, 75, Display), Op_Ficha(300, 75, Display), Op_Ficha(450, 75, Display), Op_Ficha(75, 150, Display), Op_Ficha(225,
-                                                                                                                    150,
-                                                                                                                    Display), Op_Ficha(
-    375, 150, Display), Op_Ficha(525, 150, Display)
+Ficha_op1, Ficha_op2, Ficha_op3, Ficha_op4,\
+Ficha_op5, Ficha_op6, Ficha_op7, Ficha_op8, \
+Ficha_op9, Ficha_op10, Ficha_op11, Ficha_op12 = Ficha("Azul"), Ficha("Azul"), Ficha("Azul"), Ficha("Azul"), \
+                                                Ficha("Azul"), Ficha("Azul"), Ficha("Azul"), Ficha("Azul"),\
+                                                Ficha("Azul"), Ficha("Azul"), Ficha("Azul"), Ficha("Azul")
 
 Player2_pieces = [Ficha_op1, Ficha_op2, Ficha_op3, Ficha_op4, Ficha_op5,
                   Ficha_op6, Ficha_op7, Ficha_op8, Ficha_op9, Ficha_op10,
@@ -44,6 +41,83 @@ Player2_pieces = [Ficha_op1, Ficha_op2, Ficha_op3, Ficha_op4, Ficha_op5,
 
 pygame.display.update()
 
+def Staring_Positions_P2(positionX = 0, positionY = 0, row = 1, square = 1, Lista=[]):
+    Value_List = len(Lista)
+    if square > 4:
+        square = 1
+        row += 1
+        positionY += 75
+    if row == 1 or row == 3:
+        if square == 1:
+            positionX = 75
+            square += 1
+            Lista.append((positionX, positionY))
+            Staring_Positions_P2(positionX, positionY, row, square)
+        else:
+            positionX += 150
+            square += 1
+            Lista.append((positionX, positionY))
+            Staring_Positions_P2(positionX, positionY, row, square)
+    if row == 2:
+        if square == 1:
+            positionX = 0
+            square += 1
+            Lista.append((positionX, positionY))
+            Staring_Positions_P2(positionX, positionY, row, square)
+        else:
+            positionX += 150
+            square += 1
+            Lista.append((positionX, positionY))
+            Staring_Positions_P2(positionX, positionY, row, square)
+    if Value_List == 0 or Value_List == 12:
+        return Lista
+
+def Staring_Positions_P1(positionX = 0, positionY = 525, row = 1, square = 1, Lista=[]):
+    Value_List = len(Lista)
+    if square > 4:
+        square = 1
+        row += 1
+        positionY -= 75
+    if row == 1 or row == 3:
+        if square == 1:
+            positionX = 0
+            square += 1
+            Lista.append((positionX, positionY))
+            Staring_Positions_P1(positionX, positionY, row, square)
+        else:
+            positionX += 150
+            square += 1
+            Lista.append((positionX, positionY))
+            Staring_Positions_P1(positionX, positionY, row, square)
+    if row == 2:
+        if square == 1:
+            positionX = 75
+            square += 1
+            Lista.append((positionX, positionY))
+            Staring_Positions_P1(positionX, positionY, row, square)
+        else:
+            positionX += 150
+            square += 1
+            Lista.append((positionX, positionY))
+            Staring_Positions_P1(positionX, positionY, row, square)
+    if Value_List == 0 or Value_List == 12:
+        return Lista
+
+def Placing_Staring_Pieces(List1, List2):
+    nucleus = 0
+    for player2 in Player2_pieces:
+        player2.position = List2[nucleus]
+        Display.blit(player2.image, player2.position)
+        nucleus += 1
+        pygame.display.flip()
+    nucleus = 0
+    for player in Player1_pieces:
+        player.position = List1[nucleus]
+        Display.blit(player.image, player.position)
+        nucleus += 1
+        pygame.display.flip()
+
+Placing_Staring_Pieces(Staring_Positions_P1(),Staring_Positions_P2())
 
 def end_game():
     GameEnded = True
@@ -52,70 +126,28 @@ def end_game():
 
 def No_pieces(Ending):
     if not Player1_pieces:
-        print "*" * 30
-        print "Player 2 Won!!"
+        pygame.display.set_caption("Player 2 Won!!")
         Ending = end_game()
         return Ending
     elif not Player2_pieces:
-        print "*" * 30
-        print "Player 1 Won!!"
+        pygame.display.set_caption("Player 1 Won!!")
         Ending = end_game()
         return Ending
-
-
-def Wrong_Squares():  # Esta funcion recorre todos los cuadros que son Invalidos para el jugador moverse
-    MovesInv = []
-    Xposition = 75
-    Yposition = 525
-    for cicle in range(0, 34):
-        MovesInv.append((Xposition, Yposition))
-        Xposition += 150
-        if cicle == 4 or cicle == 13 or cicle == 21 or cicle == 29:
-            Xposition = 0
-            Yposition -= 75
-        if cicle == 9 or cicle == 17 or cicle == 25:
-            Xposition = 75
-            Yposition -= 75
-
-    return MovesInv
-
-
-def Invaible_Moves(click_position, Moves):  # Esta funcion se asegura de que la ficha no se mueva a donde no debe
-    Real_position = True_position(click_position[0], click_position[1], Wrong_Squares())
-    for every in Moves:
-        if every == Real_position:
-            return True
 
 
 # Esta funcion retornara verdadero si el usuario da 2do click en una ficha que es de su mando
 def piece_in_the_middle(click_pos):
     if Turn_Player == 1:
-        Real_pos = True_position(click_pos[0], click_pos[1], memorize_board())
+        Real_pos = Ficha.True_position(click_pos[0], click_pos[1], Ficha.Moves_Squares())
         for player in Player1_pieces:
             if player.position == Real_pos:
                 return True
     else:
-        Real_pos = True_position(click_pos[0], click_pos[1], memorize_board())
+        Real_pos = Ficha.True_position(click_pos[0], click_pos[1], Ficha.Moves_Squares())
         for player2 in Player2_pieces:
             if player2.position == Real_pos:
                 return True
 
-
-def memorize_board():  # Recorre todos los cuadros que son validos para moverse
-    AviableMoves = []
-    Xposition = 0
-    Yposition = 525
-    for cicle in range(0, 34):
-        AviableMoves.append((Xposition, Yposition))
-        Xposition += 150
-        if cicle == 4 or cicle == 13 or cicle == 21 or cicle == 29:
-            Xposition = 75
-            Yposition -= 75
-        if cicle == 9 or cicle == 17 or cicle == 25:
-            Xposition = 0
-            Yposition -= 75
-
-    return AviableMoves
 
 
 def True_position(Xposition, Yposition, Squares):  # Aqui se da la posicion mas acertada en el cuadro
@@ -147,13 +179,13 @@ def print_path(First, Second, Path1, Path2):
         pygame.display.flip()
 
 
-def Find_path(Position, Lista, Lista2):  # Aqui se imprime los caminos que puede recorrer la ficha
+def Find_Path_to_Print(Position):  # Aqui se imprime los caminos que puede recorrer la ficha
     First = None
     Second = None
     if Turn_Player == 2:
-        Alternative1, Alternative2 = Adayacend_moves(Position)
-        for player2 in Lista2:
-            for player in Lista:
+        Alternative1, Alternative2 = Ficha.Adayacend_moves(Position)
+        for player2 in Player2_pieces:
+            for player in Player1_pieces:
                 if player.position == Alternative1 or player2.position == Alternative1:
                     First = True
                 elif player.position == Alternative2 or player2.position == Alternative2:
@@ -161,9 +193,9 @@ def Find_path(Position, Lista, Lista2):  # Aqui se imprime los caminos que puede
 
         print_path(First, Second, Alternative1, Alternative2)
     else:
-        Alternative1, Alternative2 = Adayacend_moves(Position)
-        for player in Lista:
-            for player2 in Lista2:
+        Alternative1, Alternative2 = Ficha.Adayacend_moves(Position)
+        for player in Player1_pieces:
+            for player2 in Player2_pieces:
                 if player.position == Alternative1 or player2.position == Alternative1:
                     First = True
                 elif player.position == Alternative2 or player2.position == Alternative2:
@@ -188,7 +220,7 @@ def dissapear_path(Path1, Path2, First, Second):
 
 def select_piece(position, plataform, Player_List):  # Funcion para seleccionar pieza
     Squares = memorize_board()
-    Real_position = True_position(position[0], position[1], Squares)
+    Real_position = Ficha.True_position(position[0], position[1], Squares)
     for Player in Player_List:
         if Player.position == Real_position:
             plataform.blit(Cuadro, Real_position)
@@ -196,43 +228,8 @@ def select_piece(position, plataform, Player_List):  # Funcion para seleccionar 
             pygame.display.flip()
 
 
-def Adayacend_moves(pos):  # Aqui se retorna las adyacentes de la ficha
-    True_pos = True_position(pos[0], pos[1], memorize_board())
-    if True_pos is None:
-        return None, None
-    if Turn_Player == 1:
-        Path1 = (True_pos[0] - 75, True_pos[1] - 75)
-        Path2 = (True_pos[0] + 75, True_pos[1] - 75)
-        return Path1, Path2
-    else:
-        Path2 = (True_pos[0] + 75, True_pos[1] + 75)
-        Path1 = (True_pos[0] - 75, True_pos[1] + 75)
-        return Path1, Path2
-
-
-def Adayacend_of_Adayacend(pos1, pos2):  # Aqui retorna las adyacentes de las adyacentes de la ficha
-    if pos1 is None or pos2 is None:
-        return None, None
-    if Turn_Player == 1:
-        Path_to_Eat1 = (pos1[0] - 75, pos1[1] - 75)
-        Path_to_Eat2 = (pos2[0] + 75, pos2[1] - 75)
-        if Path_to_Eat1[0] < 0:
-            Path_to_Eat1 = 1
-        elif Path_to_Eat2[0] > 600:
-            Path_to_Eat2 = 1
-        return Path_to_Eat1, Path_to_Eat2
-    else:
-        Path_to_Eat1 = (pos1[0] - 75, pos1[1] + 75)
-        Path_to_Eat2 = (pos2[0] + 75, pos2[1] + 75)
-        if Path_to_Eat1[0] < 0:
-            Path_to_Eat1 = 1
-        elif Path_to_Eat2[0] > 600:
-            Path_to_Eat2 = 1
-        return Path_to_Eat1, Path_to_Eat2
-
-
 def Error_Moves(pos):  # Esta funcion devuelve la ficha a su estado normal antes de ser seleccionada
-    Real = True_position(pos[0], pos[1], memorize_board())
+    Real = Ficha.True_position(pos[0], pos[1], memorize_board())
     if Turn_Player == 1:
         for player in Player1_pieces:
             if Real == player.position:
@@ -263,7 +260,7 @@ def Transform_Queen():
 
 # Aqui se dibujaran los cuadros para desaparecer los caminos del jugador una vez que cometa un error
 def Error_Path_Moves(pos):
-    Adayacend1, Adayacend2 = Adayacend_moves(pos)
+    Adayacend1, Adayacend2 = Ficha.Adayacend_moves(pos)
     First, Second = None, None
     for players in Player1_pieces:
         for players2 in Player2_pieces:
@@ -291,8 +288,8 @@ def checking_the_queens(Click_pos):
 
 # Aqui retornara True si la ficha se mueve hacia atras sin ser Reina
 def move_backwards(zpos, zpos2):
-    Tposition = True_position(zpos[0], zpos[1], memorize_board())
-    Tposition2 = True_position(zpos2[0], zpos2[1], memorize_board())
+    Tposition = Ficha.True_position(zpos[0], zpos[1], Ficha.Moves_Squares())
+    Tposition2 = Ficha.True_position(zpos2[0], zpos2[1], Ficha.Moves_Squares())
     if Tposition is None or Tposition2 is None:
         return None, None
     if Turn_Player == 1:
@@ -329,7 +326,7 @@ def Print_Eating_Path(Empty_Space1, Empty_Space2, Path1, Path2):
 
 # Esta funcion devuelve los caminos traseros de la reina
 def back_path(vpos):
-    Tpos = True_position(vpos[0], vpos[1], memorize_board())
+    Tpos = Ficha.True_position(vpos[0], vpos[1], memorize_board())
     if checking_the_queens(Tpos):
         if Turn_Player == 1:
             B_Path1, B_Path2 = (Tpos[0] - 75, Tpos[1] + 75), (Tpos[0] + 75, Tpos[1] + 75)
@@ -387,10 +384,10 @@ def Proving_Empty_Space(Path1, Path2, Eat1, Eat2):
 
 
 def Find_Eating_Queen_Path(Position):
-    Tpos = True_position(Position[0], Position[1], memorize_board())
-    Path1, Path2 = Adayacend_moves(Position)
+    Tpos = Ficha.True_position(Position[0], Position[1], Ficha.Moves_Squares())
+    Path1, Path2 = Ficha.Adayacend_moves(Position)
     V1, V2, V3, V4 = None, None, None, None
-    Eat_Path1, Eat_Path2 = Adayacend_of_Adayacend(Path1, Path2)
+    Eat_Path1, Eat_Path2 = Ficha.Adayacend_of_Adayacend(Path1, Path2)
     if checking_the_queens(Tpos):
         Path3, Path4 = back_path(Position)
         if Turn_Player == 1:
@@ -436,8 +433,8 @@ def Find_Eating_Queen_Path(Position):
 def Find_Eating_Path(Position):
     if Position is None:
         return None
-    A_Path1, A_Path2 = Adayacend_moves(Position)
-    E_Path1, E_Path2 = Adayacend_of_Adayacend(A_Path1, A_Path2)
+    A_Path1, A_Path2 = Ficha.Adayacend_moves(Position)
+    E_Path1, E_Path2 = Ficha.Adayacend_of_Adayacend(A_Path1, A_Path2)
     Ocup_Path1, Ocup_Path2 = None, None
     if Turn_Player == 1:
         for players2 in Player2_pieces:
@@ -517,8 +514,8 @@ def eat_function(zpos, zpos2):
     Tposition = True_position(zpos[0], zpos[1], memorize_board())
     Tposition2 = True_position(zpos2[0], zpos2[1], memorize_board())
     if Turn_Player == 1:
-        Path1, Path2 = Adayacend_moves(zpos)
-        Eat_pos1, Eat_pos2 = Adayacend_of_Adayacend(Path1, Path2)
+        Path1, Path2 = Ficha.Adayacend_moves(zpos)
+        Eat_pos1, Eat_pos2 = Ficha.Adayacend_of_Adayacend(Path1, Path2)
         if checking_the_queens(Tposition):
             B_Path1, B_Path2 = back_path(zpos)
             for players2 in Player2_pieces:
@@ -530,8 +527,8 @@ def eat_function(zpos, zpos2):
                 if Path1 == players2.position or Path2 == players2.position:
                     Eating_Piece(Tposition2, Path1, Path2, None, None, Eat_pos1, Eat_pos2, None, None)
     else:
-        Path1, Path2 = Adayacend_moves(zpos)
-        Eat_pos1, Eat_pos2 = Adayacend_of_Adayacend(Path1, Path2)
+        Path1, Path2 = Ficha.Adayacend_moves(zpos)
+        Eat_pos1, Eat_pos2 = Ficha.Adayacend_of_Adayacend(Path1, Path2)
         if checking_the_queens(Tposition):
             B_Path1, B_Path2 = back_path(zpos)
             Eat_pos3, Eat_pos4 = (B_Path1[0] - 75, B_Path1[1] - 75), (B_Path2[0] + 75, B_Path2[1] - 75)
@@ -542,18 +539,18 @@ def eat_function(zpos, zpos2):
 
 # Esta funcion establece los parametros para ver los caminos de la reina
 def Queen_Path_Moves(qpos):
-    Tpos = True_position(qpos[0], qpos[1], memorize_board())
+    Tpos = True_position(qpos[0], qpos[1], Ficha.Moves_Squares())
     if Turn_Player == 1:
         if checking_the_queens(Tpos):
             B_Path1, B_Path2 = back_path(qpos)
-            F_Path1, F_Path2 = Adayacend_moves(qpos)
+            F_Path1, F_Path2 = Ficha.Adayacend_moves(qpos)
             Queen_Ocuped_Path_Moves(F_Path1, F_Path2, B_Path1, B_Path2)
         else:
             return
     else:
         if checking_the_queens(Tpos):
             B_Path1, B_Path2 = back_path(qpos)
-            F_Path1, F_Path2 = Adayacend_moves(qpos)
+            F_Path1, F_Path2 = Ficha.Adayacend_moves(qpos)
             Queen_Ocuped_Path_Moves(F_Path1, F_Path2, B_Path1, B_Path2)
         else:
             return
@@ -580,7 +577,7 @@ def Queen_Ocuped_Path_Moves(Path1, Path2, B_Path1, B_Path2):
 # Esta funcion disuelve el camino de la reina
 def Queen_Dissapear_Path(qpos):
     Tpos = True_position(qpos[0], qpos[1], memorize_board())
-    Path1, Path2 = Adayacend_moves(qpos)
+    Path1, Path2 = Ficha.Adayacend_moves(qpos)
     Empty1, Empty2, Empty3, Empty4 = None, None, None, None
     if checking_the_queens(Tpos):
         if Turn_Player == 1:
@@ -619,7 +616,7 @@ def Queen_Dissapear_Path(qpos):
 
 # Esta funcion hace que se elimina la pieza que fue eliminada
 def eliminate_path(position):
-    Path1, Path2 = Adayacend_moves(position)
+    Path1, Path2 = Ficha.Adayacend_moves(position)
     Empty_First, Empty_Second = None, None
     for players in Player1_pieces:
         for players2 in Player2_pieces:
@@ -645,32 +642,6 @@ def eliminate_piece(Position_piece):
         if player2.position is None:
             Player2_pieces.remove(player2)
 
-
-# Esta funcion da a conocer que si la ficha se esta moviendo mas de 1 cuadro
-def More_than_1_Moves(position, position2, Moves):
-    Real_position = True_position(position[0], position[1], Moves)
-    Real_position2 = True_position(position2[0], position2[1], Moves)
-    if Find_Eating_Path(position):
-        return None
-    elif checking_the_queens(Real_position):
-        if Find_Eating_Queen_Path(position):
-            return None
-    if Real_position is None:
-        Real_position = True_position(position[0], position[1], Wrong_Squares())
-    elif Real_position2 is None:
-        Real_position2 = True_position(position2[0], position2[1], Wrong_Squares())
-    if Real_position[0] > Real_position2[0]:
-        ResultX = Real_position[0] - Real_position2[0]
-    else:
-        ResultX = Real_position2[0] - Real_position[0]
-    if Real_position[1] > Real_position2[1]:
-        ResultY = Real_position[1] - Real_position2[1]
-    else:
-        ResultY = Real_position2[1] - Real_position[1]
-    if ResultX >= 150 and ResultY >= 150:
-        return True
-    else:
-        return False
 
 
 def Find_Path2(D_Path1, D_Path2, Eat_Path1, Eat_Path2):
@@ -716,8 +687,8 @@ def Find_Path2(D_Path1, D_Path2, Eat_Path1, Eat_Path2):
 def Find_Path(S_Position):
     if S_Position is None:
         return None
-    A_Path1, A_Path2 = Adayacend_moves(S_Position)
-    E_Path1, E_Path2 = Adayacend_of_Adayacend(A_Path1, A_Path2)
+    A_Path1, A_Path2 = Ficha.Adayacend_moves(S_Position)
+    E_Path1, E_Path2 = Ficha.Adayacend_of_Adayacend(A_Path1, A_Path2)
     Ocup_Path1, Ocup_Path2 = None, None
     if Turn_Player == 1:
         for players2 in Player2_pieces:
@@ -740,6 +711,31 @@ def Find_Path(S_Position):
         else:
             return Find_Path2(Ocup_Path1, Ocup_Path2, E_Path1, E_Path2)
 
+# Esta funcion da a conocer que si la ficha se esta moviendo mas de 1 cuadro
+def More_than_1_Moves(position, position2, Moves):
+    Real_position = True_position(position[0], position[1], Moves)
+    Real_position2 = True_position(position2[0], position2[1], Moves)
+    if Find_Path(position):
+        return None
+    elif checking_the_queens(Real_position):
+        if Find_Eating_Queen_Path(position):
+            return None
+    if Real_position is None:
+        Real_position = True_position(position[0], position[1], Wrong_Squares())
+    elif Real_position2 is None:
+        Real_position2 = True_position(position2[0], position2[1], Wrong_Squares())
+    if Real_position[0] > Real_position2[0]:
+        ResultX = Real_position[0] - Real_position2[0]
+    else:
+        ResultX = Real_position2[0] - Real_position[0]
+    if Real_position[1] > Real_position2[1]:
+        ResultY = Real_position[1] - Real_position2[1]
+    else:
+        ResultY = Real_position2[1] - Real_position[1]
+    if ResultX >= 150 and ResultY >= 150:
+        return True
+    else:
+        return False
 
 # Funcion que autoriza el doble salto en la ficha
 def Double_Jump(Player_Eat, Second_pos):
@@ -754,9 +750,9 @@ def Double_Jump(Player_Eat, Second_pos):
 
 # Esta funcion desaparece los caminos de las fichas si hay 2 caminos para comer
 def Disapear_Path_of_Two_Eating_pieces(Position1):
-    Path1, Path2 = Adayacend_moves(Position1)
+    Path1, Path2 = Ficha.Adayacend_moves(Position1)
     V1, V2, D1, D2 = None, None, None, None
-    Pos_Eat1, Pos_Eat2 = Adayacend_of_Adayacend(Path1, Path2)
+    Pos_Eat1, Pos_Eat2 = Ficha.Adayacend_of_Adayacend(Path1, Path2)
     if Turn_Player == 1:
         for players2 in Player2_pieces:
             if players2.position == Path1:
@@ -795,14 +791,10 @@ def Disapear_Path_of_Two_Eating_pieces(Position1):
 def Next_Turn(Turn):
     if Turn == 1:
         Turn += 1
-        print "*" * 30
-        print "Player 2 Turn"
         pygame.display.set_caption("Damas... Players 2 Turn")
         return Turn
     else:
         Turn = 1
-        print "*" * 30
-        print "Player 1 Turn"
         pygame.display.set_caption("Damas... Players 1 Turn")
         return Turn
 
@@ -848,7 +840,7 @@ def Movement(tpos1, tpos2):
 
 # Esta retornara False si la ficha que clickeo el jugador es la de el
 def touch_another_piece(Position):
-    Tposition = True_position(Position[0], Position[1], memorize_board())
+    Tposition = True_position(Position[0], Position[1], Ficha.Moves_Squares())
     if Turn_Player == 1:
         for players in Player1_pieces:
             if players.position == Tposition:
@@ -875,15 +867,10 @@ def seleccion_of_pieces(tpos):
     Display.blit(Cuadro, num_Real)
     if Turn_Player == 1:
         select_piece(tpos, Display, Player1_pieces)
-        for player in Player1_pieces:
-            if player.position == num_Real:
-                Find_path(tpos, Player1_pieces, Player2_pieces)
+        Find_Path_to_Print(tpos)
     else:
         select_piece(tpos, Display, Player2_pieces)
-        for player2 in Player2_pieces:
-            if player2.position == num_Real:
-                Find_path(tpos, Player1_pieces, Player2_pieces)
-
+        Find_Path_to_Print(tpos)
 
 Array_of_Positions = []
 Click_Numbers = 1
