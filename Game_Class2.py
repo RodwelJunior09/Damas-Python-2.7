@@ -1,6 +1,4 @@
 import pygame
-
-
 class Ficha:
     def __init__(self, Color):
         self.color = Color
@@ -25,8 +23,8 @@ class Ficha:
                             return Real_position
 
     @staticmethod
-    def Adayacend_moves(pos):  # Aqui se retorna las adyacentes de la ficha
-        True_pos = True_position(pos[0], pos[1], Ficha.Moves_Squares())
+    def Adayacend_moves(pos, Turn_Player):  # Aqui se retorna las adyacentes de la ficha
+        True_pos = Ficha.True_position(pos[0], pos[1], Ficha.Moves_Squares())
         if True_pos is None:
             return None, None
         if Turn_Player == 1:
@@ -39,7 +37,7 @@ class Ficha:
             return Path1, Path2
 
     @staticmethod
-    def Adayacend_of_Adayacend(pos1, pos2):  # Aqui retorna las adyacentes de las adyacentes de la ficha
+    def Adayacend_of_Adayacend(pos1, pos2, Turn_Player):  # Aqui retorna las adyacentes de las adyacentes de la ficha
         if pos1 is None or pos2 is None:
             return None, None
         if Turn_Player == 1:
@@ -74,6 +72,24 @@ class Ficha:
                 Xposition = 0
                 Yposition -= 75
         return AviableMoves
+
+
+    @staticmethod
+    def Wrong_Squares():
+        List_W_Moves = []
+        Xposition = 0
+        Yposition = 525
+        for cicle in range(0, 34):
+            List_W_Moves.append((Xposition, Yposition))
+            Xposition += 150
+            if cicle == 4 or cicle == 13 or cicle == 21 or cicle == 29:
+                Xposition = 0
+                Yposition -= 75
+            if cicle == 9 or cicle == 17 or cicle == 25:
+                Xposition = 75
+                Yposition -= 75
+        return List_W_Moves
+
 
     def Transformando_Ficha_Reina(self, ubication="./Imagenes/Ficha_Naranja_Reina.png"):
         if self.color == "Naranja":
