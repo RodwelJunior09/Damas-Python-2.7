@@ -157,46 +157,12 @@ def piece_in_the_middle(click_pos):
                 return True
 
 
-# Aqui se imprime los caminos que recorrera el usuario
-def print_path(First, Second, Path1, Path2):
-    if First and Second is None:
-        Display.blit(Puntero, Path2)
-        pygame.display.flip()
-    elif Second and First is None:
-        Display.blit(Puntero, Path1)
-        pygame.display.flip()
-    elif First and Second:
-        return
-    elif First is None and Second is None:
-        Display.blit(Puntero, Path1)
-        Display.blit(Puntero, Path2)
-        pygame.display.flip()
-
-
-def Find_Path_to_Print(Position):  # Aqui se imprime los caminos que puede recorrer la ficha
-    First = None
-    Second = None
-    if Turn_Player == 2:
-        Alternative1, Alternative2 = Ficha.Adayacend_moves(Position)
-        for player2 in Player2_pieces:
-            for player in Player1_pieces:
-                if player.position == Alternative1 or player2.position == Alternative1:
-                    First = True
-                elif player.position == Alternative2 or player2.position == Alternative2:
-                    Second = True
-
-        print_path(First, Second, Alternative1, Alternative2)
+def Invaible_Move(Position):
+    Tpos = Ficha.True_position(Position[0], Position[1], Ficha.Wrong_Squares())
+    if Tpos is None:
+        return None
     else:
-        Alternative1, Alternative2 = Ficha.Adayacend_moves(Position)
-        for player in Player1_pieces:
-            for player2 in Player2_pieces:
-                if player.position == Alternative1 or player2.position == Alternative1:
-                    First = True
-                elif player.position == Alternative2 or player2.position == Alternative2:
-                    Second = True
-
-        print_path(First, Second, Alternative1, Alternative2)
-
+        return True
 
 # Esta funcion hace desaparecer los caminos de la pantalla
 def dissapear_path(Path1, Path2, First, Second):
@@ -266,20 +232,6 @@ def Error_Path_Moves(pos):
     dissapear_path(Adayacend1, Adayacend2, First, Second)
 
 
-# Esta funcion toma una posicion y checkea si en la lista hay una reina retornara Verdadero
-def checking_the_queens(Click_pos):
-    if Turn_Player == 1:
-        for players in Player1_pieces:
-            if players.position == Click_pos:
-                if players.queen_status:
-                    return True
-    else:
-        for players2 in Player2_pieces:
-            if players2.position == Click_pos:
-                if players2.queen_status:
-                    return True
-
-
 # Aqui retornara True si la ficha se mueve hacia atras sin ser Reina
 def move_backwards(zpos, zpos2):
     Tposition = Ficha.True_position(zpos[0], zpos[1], Ficha.Moves_Squares())
@@ -287,14 +239,14 @@ def move_backwards(zpos, zpos2):
     if Tposition is None or Tposition2 is None:
         return None, None
     if Turn_Player == 1:
-        if checking_the_queens(Tposition):
+        if Ficha.Checking_The_Queens(Tposition, Player1_pieces, Player2_pieces, Turn_Player):
             return None
         Next_position = (Tposition[0] - 75, Tposition[1] + 75)
         Next_position2 = (Tposition[0] + 75, Tposition[1] + 75)
         if Tposition2 == Next_position or Tposition2 == Next_position2:
             return True
     else:
-        if checking_the_queens(Tposition):
+        if Ficha.Checking_The_Queens(Tposition, Player1_pieces, Player2_pieces, Turn_Player):
             return None
         Next_position = (Tposition[0] - 75, Tposition[1] - 75)
         Next_position2 = (Tposition[0] + 75, Tposition[1] - 75)
@@ -316,20 +268,6 @@ def Print_Eating_Path(Empty_Space1, Empty_Space2, Path1, Path2):
     elif Empty_Space1 is None and Empty_Space2 is False:
         Display.blit(Puntero, Path1)
         pygame.display.flip()
-
-
-# Esta funcion devuelve los caminos traseros de la reina
-def back_path(vpos):
-    Tpos = Ficha.True_position(vpos[0], vpos[1], Ficha.Moves_Squares())
-    if checking_the_queens(Tpos):
-        if Turn_Player == 1:
-            B_Path1, B_Path2 = (Tpos[0] - 75, Tpos[1] + 75), (Tpos[0] + 75, Tpos[1] + 75)
-            return B_Path1, B_Path2
-        else:
-            B_Path1, B_Path2 = (Tpos[0] - 75, Tpos[1] - 75), (Tpos[0] + 75, Tpos[1] - 75)
-            return B_Path1, B_Path2
-    else:
-        return
 
 
 # Esta funcion sirve para cuando el usuario que va a comer tiene los espacios ocupados
@@ -379,11 +317,11 @@ def Proving_Empty_Space(Path1, Path2, Eat1, Eat2):
 
 def Find_Eating_Queen_Path(Position):
     Tpos = Ficha.True_position(Position[0], Position[1], Ficha.Moves_Squares())
-    Path1, Path2 = Ficha.Adayacend_moves(Position)
+    Path1, Path2 = Ficha.Adayacend_moves(Position, Turn_Player)
     V1, V2, V3, V4 = None, None, None, None
-    Eat_Path1, Eat_Path2 = Ficha.Adayacend_of_Adayacend(Path1, Path2)
-    if checking_the_queens(Tpos):
-        Path3, Path4 = back_path(Position)
+    Eat_Path1, Eat_Path2 = Ficha.Adayacend_of_Adayacend(Path1, Path2, Turn_Player)
+    if Ficha.Checking_The_Queens(Tpos, Player1_pieces, Player2_pieces, Turn_Player):
+        Path3, Path4 = Ficha.Back_Path(Tpos, Player1_pieces, Player2_pieces, Turn_Player)
         if Turn_Player == 1:
             Eat_Path3, Eat_Path4 = (Path3[0] - 75, Path3[1] + 75), (Path4[0] + 75, Path4[1] + 75)
             for players2 in Player2_pieces:
@@ -403,7 +341,7 @@ def Find_Eating_Queen_Path(Position):
                 Proving_Empty_Space(V3, V4, Eat_Path3, Eat_Path4)
                 return True
         else:
-            Path3, Path4 = back_path(Position)
+            Path3, Path4 = Ficha.Back_Path(Tpos, Player1_pieces, Player2_pieces, Turn_Player)
             Eat_Path3, Eat_Path4 = (Path3[0] - 75, Path3[1] - 75), (Path4[0] + 75, Path4[1] - 75)
             for players in Player1_pieces:
                 if players.position == Path1:
@@ -427,8 +365,8 @@ def Find_Eating_Queen_Path(Position):
 def Find_Eating_Path(Position):
     if Position is None:
         return None
-    A_Path1, A_Path2 = Ficha.Adayacend_moves(Position)
-    E_Path1, E_Path2 = Ficha.Adayacend_of_Adayacend(A_Path1, A_Path2)
+    A_Path1, A_Path2 = Ficha.Adayacend_moves(Position, Turn_Player)
+    E_Path1, E_Path2 = Ficha.Adayacend_of_Adayacend(A_Path1, A_Path2, Turn_Player)
     Ocup_Path1, Ocup_Path2 = None, None
     if Turn_Player == 1:
         for players2 in Player2_pieces:
@@ -466,106 +404,123 @@ def Do_not_Eat(Path):
     Display.blit(Cuadro, Path)
     pygame.display.flip()
 
-
-# Esta funcion recorre la accion que si el jugador decide comer o no
-def Eating_Piece(click_pos, Path1, Path2, Path3, Path4, Eat_pos1, Eat_pos2, Eat_pos3, Eat_pos4):
-    if Eat_pos1 == click_pos:
+def Dissapearing_Eating_Path(Decision, Position):
+    Path1, Path2 = Ficha.Adayacend_moves(Position, Turn_Player)
+    B_Path1, B_Path2 = Ficha.Back_Path(Position, Player1_pieces, Player2_pieces, Turn_Player)
+    Eat_pos1, Eat_pos2 = Ficha.Adayacend_of_Adayacend(Path1, Path2, Turn_Player)
+    Eat_pos3, Eat_pos4 = Ficha.Adayacend_of_Adayacend(B_Path1, B_Path2, Turn_Player)
+    if Decision == 1:
         Display.blit(Cuadro, Path1)
         eliminate_path(Path1)
         eliminate_piece(Path1)
         pygame.display.flip()
-    elif Eat_pos2 == click_pos:
+    elif Decision == 2:
         Display.blit(Cuadro, Path2)
         eliminate_path(Path2)
         eliminate_piece(Path2)
         pygame.display.flip()
-    elif Eat_pos3 == click_pos:
-        Display.blit(Cuadro, Path3)
+    elif Decision == 3:
+        Display.blit(Cuadro, B_Path1)
         eliminate_piece(Path3)
         eliminate_path(Path3)
         pygame.display.flip()
-    elif Eat_pos4 == click_pos:
-        Display.blit(Cuadro, Path4)
+    elif Decision == 4:
+        Display.blit(Cuadro, B_Path2)
         eliminate_piece(Path4)
         eliminate_path(Path4)
         pygame.display.flip()
-    elif Path1 == click_pos:
+    elif Decision == 1.5:
         if Do_not_Eat(Eat_pos2):
             return
-    elif Path2 == click_pos:
+    elif Decision == 2.5:
         if Do_not_Eat(Eat_pos1):
             return
-    elif Path3 == click_pos:
+    elif Decision == 3.5:
         if Do_not_Eat(Eat_pos4):
             return
-    elif Path4 == click_pos:
+    elif Decision == 4.5:
         if Do_not_Eat(Eat_pos3):
             return
 
 
-# Aqui se ejecuta el movimiento para comer de la ficha
-def eat_function(zpos, zpos2):
-    Tposition = Ficha.True_position(zpos[0], zpos[1], Ficha.Moves_Squares())
-    Tposition2 = Ficha.True_position(zpos2[0], zpos2[1], Ficha.Moves_Squares())
-    if Turn_Player == 1:
-        Path1, Path2 = Ficha.Adayacend_moves(zpos, Turn_Player)
-        Eat_pos1, Eat_pos2 = Ficha.Adayacend_of_Adayacend(Path1, Path2, Turn_Player)
-        if checking_the_queens(Tposition):
-            B_Path1, B_Path2 = back_path(zpos)
-            for players2 in Player2_pieces:
-                if players2.position == Path1 or players2.position == Path2 or players2.position == B_Path1 or players2.position == B_Path2:
-                    Eat_pos3, Eat_pos4 = (B_Path1[0] - 75, B_Path1[1] + 75), (B_Path2[0] + 75, B_Path2[1] + 75)
-                    Eating_Piece(Tposition2, Path1, Path2, B_Path1, B_Path2, Eat_pos1, Eat_pos2, Eat_pos3, Eat_pos4)
-        else:
-            for players2 in Player2_pieces:
-                if Path1 == players2.position or Path2 == players2.position:
-                    Eating_Piece(Tposition2, Path1, Path2, None, None, Eat_pos1, Eat_pos2, None, None)
-    else:
-        Path1, Path2 = Ficha.Adayacend_moves(zpos)
-        Eat_pos1, Eat_pos2 = Ficha.Adayacend_of_Adayacend(Path1, Path2)
-        if checking_the_queens(Tposition):
-            B_Path1, B_Path2 = back_path(zpos)
-            Eat_pos3, Eat_pos4 = (B_Path1[0] - 75, B_Path1[1] - 75), (B_Path2[0] + 75, B_Path2[1] - 75)
-            Eating_Piece(Tposition2, Path1, Path2, B_Path1, B_Path2, Eat_pos1, Eat_pos2, Eat_pos3, Eat_pos4)
-        else:
-            Eating_Piece(Tposition2, Path1, Path2, None, None, Eat_pos1, Eat_pos2, None, None)
-
-
-# Esta funcion establece los parametros para ver los caminos de la reina
-def Queen_Path_Moves(qpos):
-    Tpos = Ficha.True_position(qpos[0], qpos[1], Ficha.Moves_Squares())
-    if Turn_Player == 1:
-        if checking_the_queens(Tpos):
-            B_Path1, B_Path2 = back_path(qpos)
-            F_Path1, F_Path2 = Ficha.Adayacend_moves(qpos, Turn_Player)
-            Queen_Ocuped_Path_Moves(F_Path1, F_Path2, B_Path1, B_Path2)
-        else:
+def Print_Path(Position, Player1, Player2, Turn_Player):
+    Path1, Path2 = Ficha.Adayacend_moves(Position, Turn_Player)
+    Path3, Path4 = Ficha.Back_Path(Position, Player1, Player2, Turn_Player)
+    First, Second, Third, Fourth = Ficha.Find_Path_to_Print(Position, Player1, Player2, Turn_Player)
+    if Ficha.Checking_The_Queens(Position, Player1, Player2, Turn_Player):
+        if Third and Fourth is None:
+            Display.blit(Puntero, Path4)
+            pygame.display.flip()
+        if Fourth and Third is None:
+            Display.blit(Puntero, Path3)
+            pygame.display.flip()
+        if Third and Fourth:
             return
-    else:
-        if checking_the_queens(Tpos):
-            B_Path1, B_Path2 = back_path(qpos)
-            F_Path1, F_Path2 = Ficha.Adayacend_moves(qpos, Turn_Player)
-            Queen_Ocuped_Path_Moves(F_Path1, F_Path2, B_Path1, B_Path2)
-        else:
+        if Third is None and Fourth is None:
+            Display.blit(Puntero, Path3)
+            Display.blit(Puntero, Path4)
+            pygame.display.flip()
+        if First and Second is None:
+            Display.blit(Puntero, Path2)
+            pygame.display.flip()
+        if Second and First is None:
+            Display.blit(Puntero, Path1)
+            pygame.display.flip()
+        if First and Second:
             return
+        if First is None and Second is None:
+            Display.blit(Puntero, Path1)
+            Display.blit(Puntero, Path2)
+            pygame.display.flip()
+    else:
+        if First and Second is None:
+            Display.blit(Puntero, Path2)
+            pygame.display.flip()
+        elif Second and First is None:
+            Display.blit(Puntero, Path1)
+            pygame.display.flip()
+        elif First and Second:
+            return
+        elif First is None and Second is None:
+            Display.blit(Puntero, Path1)
+            Display.blit(Puntero, Path2)
+            pygame.display.flip()
+
+# # Esta funcion establece los parametros para ver los caminos de la reina
+# def Queen_Path_Moves(qpos):
+#     Tpos = Ficha.True_position(qpos[0], qpos[1], Ficha.Moves_Squares())
+#     if Turn_Player == 1:
+#         if Ficha.Checking_The_Queens(Tpos, Player1_pieces, Player2_pieces, Turn_Player):
+#             B_Path1, B_Path2 = Ficha.Back_Path(qpos, Turn_Player)
+#             F_Path1, F_Path2 = Ficha.Adayacend_moves(qpos, Turn_Player)
+#             Queen_Ocuped_Path_Moves(F_Path1, F_Path2, B_Path1, B_Path2)
+#         else:
+#             return
+#     else:
+#         if Ficha.Checking_The_Queens(Tpos, Player1_pieces, Player2_pieces, Turn_Player):
+#             B_Path1, B_Path2 = Ficha.Back_Path(Tpos, Turn_Player)
+#             F_Path1, F_Path2 = Ficha.Adayacend_moves(qpos, Turn_Player)
+#             Queen_Ocuped_Path_Moves(F_Path1, F_Path2, B_Path1, B_Path2)
+#         else:
+#             return
 
 
 # Verifica si las piezas estan en el mismo camino de la reina
-def Queen_Ocuped_Path_Moves(Path1, Path2, B_Path1, B_Path2):
-    Punter1, Punter2, Punter3, Punter4 = None, None, None, None
-    for players in Player1_pieces:
-        for players2 in Player2_pieces:
-            if players.position == Path1 or players2.position == Path1:
-                Punter1 = True
-            elif players.position == Path2 or players2.position == Path2:
-                Punter2 = True
-            elif players.position == B_Path1 or players2.position == B_Path1:
-                Punter3 = True
-            elif players.position == B_Path2 or players2.position == B_Path2:
-                Punter4 = True
-
-    print_path(Punter1, Punter2, Path1, Path2)
-    print_path(Punter3, Punter4, B_Path1, B_Path2)
+# def Queen_Ocuped_Path_Moves(Position, Path1, Path2, B_Path1, B_Path2):
+#     Punter1, Punter2, Punter3, Punter4 = None, None, None, None
+#     for players in Player1_pieces:
+#         for players2 in Player2_pieces:
+#             if players.position == Path1 or players2.position == Path1:
+#                 Punter1 = True
+#             elif players.position == Path2 or players2.position == Path2:
+#                 Punter2 = True
+#             elif players.position == B_Path1 or players2.position == B_Path1:
+#                 Punter3 = True
+#             elif players.position == B_Path2 or players2.position == B_Path2:
+#                 Punter4 = True
+#
+#     Ficha.Print_Path(Position, Path1, Path2)
+#     print_path()
 
 
 # Esta funcion disuelve el camino de la reina
@@ -573,7 +528,7 @@ def Queen_Dissapear_Path(qpos):
     Tpos = Ficha.True_position(qpos[0], qpos[1], Ficha.Moves_Squares())
     Path1, Path2 = Ficha.Adayacend_moves(qpos, Turn_Player)
     Empty1, Empty2, Empty3, Empty4 = None, None, None, None
-    if checking_the_queens(Tpos):
+    if Ficha.Checking_The_Queens(Tpos, Player1_pieces, Player2_pieces, Turn_Player):
         if Turn_Player == 1:
             B_Path1, B_Path2 = (Tpos[0] - 75, Tpos[1] + 75), (Tpos[0] + 75, Tpos[1] + 75)
             for players in Player1_pieces:
@@ -637,81 +592,81 @@ def eliminate_piece(Position_piece):
             Player2_pieces.remove(player2)
 
 
-def Find_Path2(D_Path1, D_Path2, Eat_Path1, Eat_Path2):
-    Ocuped_Epath1, Ocuped_Epath2 = None, None
-    if Eat_Path1 == 1:
-        Ocuped_Epath1 = True
-    if Eat_Path2 == 1:
-        Ocuped_Epath2 = True
-    if D_Path1 and D_Path2 is None:
-        for players in Player1_pieces:
-            for players2 in Player2_pieces:
-                if players.position == Eat_Path1 or players2.position == Eat_Path1:
-                    Ocuped_Epath1 = True
-        if Ocuped_Epath1:
-            return False
-        else:
-            return True
-    if D_Path1 is None and D_Path2:
-        for players in Player1_pieces:
-            for players2 in Player2_pieces:
-                if players.position == Eat_Path2 or players2.position == Eat_Path2:
-                    Ocuped_Epath2 = True
-        if Ocuped_Epath2:
-            return False
-        else:
-            return True
-    if D_Path1 and D_Path2:
-        for players in Player1_pieces:
-            for players2 in Player2_pieces:
-                if players.position == Eat_Path2 or players2.position == Eat_Path2:
-                    Ocuped_Epath2 = True
-                if players.position == Eat_Path1 or players2.position == Eat_Path1:
-                    Ocuped_Epath1 = True
-        if Ocuped_Epath2 and Ocuped_Epath1:
-            return False
-        elif Ocuped_Epath2 and Ocuped_Epath1 is None:
-            return True
-        elif Ocuped_Epath1 and Ocuped_Epath2 is None:
-            return True
-
-
-# Esta funcion busca si la ficha puede dar el doble salto
-def Find_Path(S_Position):
-    if S_Position is None:
-        return None
-    A_Path1, A_Path2 = Ficha.Adayacend_moves(S_Position, Turn_Player)
-    E_Path1, E_Path2 = Ficha.Adayacend_of_Adayacend(A_Path1, A_Path2, Turn_Player)
-    Ocup_Path1, Ocup_Path2 = None, None
-    if Turn_Player == 1:
-        for players2 in Player2_pieces:
-            if players2.position == A_Path1:
-                Ocup_Path1 = True
-            if players2.position == A_Path2:
-                Ocup_Path2 = True
-        if Ocup_Path1 is None and Ocup_Path2 is None:
-            return None
-        else:
-            return Find_Path2(Ocup_Path1, Ocup_Path2, E_Path1, E_Path2)
-    else:
-        for players in Player1_pieces:
-            if players.position == A_Path1:
-                Ocup_Path1 = True
-            if players.position == A_Path2:
-                Ocup_Path2 = True
-        if Ocup_Path1 is None and Ocup_Path2 is None:
-            return None
-        else:
-            return Find_Path2(Ocup_Path1, Ocup_Path2, E_Path1, E_Path2)
+# def Find_Path2(D_Path1, D_Path2, Eat_Path1, Eat_Path2):
+#     Ocuped_Epath1, Ocuped_Epath2 = None, None
+#     if Eat_Path1 == 1:
+#         Ocuped_Epath1 = True
+#     if Eat_Path2 == 1:
+#         Ocuped_Epath2 = True
+#     if D_Path1 and D_Path2 is None:
+#         for players in Player1_pieces:
+#             for players2 in Player2_pieces:
+#                 if players.position == Eat_Path1 or players2.position == Eat_Path1:
+#                     Ocuped_Epath1 = True
+#         if Ocuped_Epath1:
+#             return False
+#         else:
+#             return True
+#     if D_Path1 is None and D_Path2:
+#         for players in Player1_pieces:
+#             for players2 in Player2_pieces:
+#                 if players.position == Eat_Path2 or players2.position == Eat_Path2:
+#                     Ocuped_Epath2 = True
+#         if Ocuped_Epath2:
+#             return False
+#         else:
+#             return True
+#     if D_Path1 and D_Path2:
+#         for players in Player1_pieces:
+#             for players2 in Player2_pieces:
+#                 if players.position == Eat_Path2 or players2.position == Eat_Path2:
+#                     Ocuped_Epath2 = True
+#                 if players.position == Eat_Path1 or players2.position == Eat_Path1:
+#                     Ocuped_Epath1 = True
+#         if Ocuped_Epath2 and Ocuped_Epath1:
+#             return False
+#         elif Ocuped_Epath2 and Ocuped_Epath1 is None:
+#             return True
+#         elif Ocuped_Epath1 and Ocuped_Epath2 is None:
+#             return True
+#
+#
+# # Esta funcion busca si la ficha puede dar el doble salto
+# def Find_Path(S_Position):
+#     if S_Position is None:
+#         return None
+#     A_Path1, A_Path2 = Ficha.Adayacend_moves(S_Position, Turn_Player)
+#     E_Path1, E_Path2 = Ficha.Adayacend_of_Adayacend(A_Path1, A_Path2, Turn_Player)
+#     Ocup_Path1, Ocup_Path2 = None, None
+#     if Turn_Player == 1:
+#         for players2 in Player2_pieces:
+#             if players2.position == A_Path1:
+#                 Ocup_Path1 = True
+#             if players2.position == A_Path2:
+#                 Ocup_Path2 = True
+#         if Ocup_Path1 is None and Ocup_Path2 is None:
+#             return None
+#         else:
+#             return Find_Path2(Ocup_Path1, Ocup_Path2, E_Path1, E_Path2)
+#     else:
+#         for players in Player1_pieces:
+#             if players.position == A_Path1:
+#                 Ocup_Path1 = True
+#             if players.position == A_Path2:
+#                 Ocup_Path2 = True
+#         if Ocup_Path1 is None and Ocup_Path2 is None:
+#             return None
+#         else:
+#             return Find_Path2(Ocup_Path1, Ocup_Path2, E_Path1, E_Path2)
 
 
 # Esta funcion da a conocer que si la ficha se esta moviendo mas de 1 cuadro
 def More_than_1_Moves(position, position2, Moves):
     Real_position = Ficha.True_position(position[0], position[1], Moves)
     Real_position2 = Ficha.True_position(position2[0], position2[1], Moves)
-    if Find_Path(position):
+    if Ficha.Find_Path(position, Turn_Player, Player1_pieces, Player2_pieces):
         return None
-    elif checking_the_queens(Real_position):
+    elif Ficha.Checking_The_Queens(Real_position, Player1_pieces, Player2_pieces, Turn_Player):
         if Find_Eating_Queen_Path(position):
             return None
     if Real_position is None:
@@ -735,7 +690,7 @@ def More_than_1_Moves(position, position2, Moves):
 # Funcion que autoriza el doble salto en la ficha
 def Double_Jump(Player_Eat, Second_pos):
     if Player_Eat:
-        if Find_Path(Second_pos):
+        if Ficha.Find_Path(Second_pos, Turn_Player, Player1_pieces, Player2_pieces):
             return True
         else:
             return False
@@ -822,19 +777,19 @@ def Movement(tpos1, tpos2):
             if Player.position == Real_Position:
                 Display.blit(Cuadro, Real_Position)
                 Display.blit(Cuadro, Real_Position2)
-                Player.movement_pieces(Real_Position2[0], Real_Position2[1])
+                Player.movement_pieces(Real_Position2[0], Real_Position2[1], Display)
                 pygame.display.flip()
     else:
         for Player2 in Player2_pieces:
             if Player2.position == Real_Position:
                 Display.blit(Cuadro, Real_Position)
                 Display.blit(Cuadro, Real_Position2)
-                Player2.movement_pieces(Real_Position2[0], Real_Position2[1])
+                Player2.movement_pieces(Real_Position2[0], Real_Position2[1], Display)
                 pygame.display.flip()
 
 
 # Esta retornara False si la ficha que clickeo el jugador es la de el
-def touch_another_piece(Position):
+def Touch_Another_Piece(Position):
     Tposition = Ficha.True_position(Position[0], Position[1], Ficha.Moves_Squares())
     if Turn_Player == 1:
         for players in Player1_pieces:
@@ -862,10 +817,8 @@ def seleccion_of_pieces(tpos):
     Display.blit(Cuadro, num_Real)
     if Turn_Player == 1:
         select_piece(tpos, Display, Player1_pieces)
-        Find_Path_to_Print(tpos)
     else:
         select_piece(tpos, Display, Player2_pieces)
-        Find_Path_to_Print(tpos)
 
 
 Array_of_Positions = []
@@ -879,11 +832,11 @@ while not EndGame:
         if pygame.mouse.get_pressed()[0] == 1:
             if Click_Numbers == 1:
                 pos = pygame.mouse.get_pos()
-                if touch_another_piece(pos):
+                if Touch_Another_Piece(pos):
                     Array_of_Positions = []
                     Click_Numbers = 1
                 else:
-                    Queen_Path_Moves(pos)
+                    Print_Path(pos, Player1_pieces, Player2_pieces, Turn_Player)
                     Find_Eating_Queen_Path(pos)
                     Find_Eating_Path(pos)
                     Array_of_Positions.append(pos)
@@ -895,11 +848,11 @@ while not EndGame:
                     Array_of_Positions = []
                     Click_Numbers = 1
                 else:
-                    #Decision1 = Invaible_Moves(pos2, Wrong_Squares())
+                    Decision1 = Invaible_Move(Array_of_Positions[0])
                     Decision2 = More_than_1_Moves(Array_of_Positions[0], pos2, Ficha.Moves_Squares())
                     Decision3 = piece_in_the_middle(pos2)
                     Decision4 = move_backwards(Array_of_Positions[0], pos2)
-                    if Decision2 or Decision3 or Decision4:
+                    if Decision1 or Decision2 or Decision3 or Decision4:
                         pygame.display.set_caption("Damas... Movement Invalid Play Again")
                         Error_Path_Moves(Array_of_Positions[0])
                         Error_Moves(Array_of_Positions[0])
@@ -908,8 +861,9 @@ while not EndGame:
                     else:
                         Queen_Dissapear_Path(Array_of_Positions[0])
                         Disapear_Path_of_Two_Eating_pieces(Array_of_Positions[0])
-                        Player_Eat = Find_Path(Array_of_Positions[0])
-                        eat_function(Array_of_Positions[0], pos2)
+                        Player_Eat = Ficha.Find_Path(Array_of_Positions[0], Turn_Player, Player1_pieces, Player2_pieces)
+                        Ficha.Eating(Array_of_Positions[0], pos2, Turn_Player, Player1_pieces, Player2_pieces)
+                        Dissapearing_Eating_Path(Ficha.Eating(Array_of_Positions[0],pos2,Turn_Player,Player1_pieces,Player2_pieces), Array_of_Positions[0])
                         Movement(Array_of_Positions[0], pos2)
                         Transform_Queen()
                         eliminate_path(Array_of_Positions[0])
