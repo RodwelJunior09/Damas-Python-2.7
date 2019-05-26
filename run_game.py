@@ -82,10 +82,45 @@ def find_player(pos):
                 game_display.blit(piece.sprite, piece.position)
                 return piece
 
+def refresh_movement(paths, pos1, piece_selected, block_path1, block_path2):
+    if block_path1 == False:
+        game_display.blit(fill_square, paths[0])
+    if block_path2 == False:
+        game_display.blit(fill_square, paths[1])
+    game_display.blit(fill_square, pos1)
+    game_display.blit(piece_selected.sprite, piece_selected.position)
+    pygame.display.update()
+
+def blocked_paths(paths):
+    in_path1, in_path2 = False, False
+    if turn_player == 1:    
+        for friend in player1_army:
+            if friend.position == paths[0]:
+                in_path1 = True
+            if friend.position == paths[1]:
+                in_path2 = True
+        return in_path1, in_path2
+    elif turn_player == 2:
+        for friend in player2_army:
+            if friend.position == paths[0]:
+                in_path1 = True
+            if friend.position == paths[1]:
+                in_path2 = True
+        return in_path1, in_path2
+    
+def refresh_paths(paths):
+    blocked_path1, blocked_path2 = blocked_paths(paths)
+    if blocked_path1 == False:
+        game_display.blit(puntero, paths[0])
+    if blocked_path2 == False:
+        game_display.blit(puntero, paths[1])
+    pygame.display.update()
+
 def end_game():
     print("Finishing the game....")
     return True
 
+piece_selected = None
 starting_positions()
 pygame.display.update()
 
@@ -95,17 +130,32 @@ while not game_on:
             game_on = end_game()
             
         if pygame.mouse.get_pressed()[0] == 1:
+            if turn_player == 3:
+                turn_player = 1
             if number_click == 1:
                 pos = pygame.mouse.get_pos()
                 if touch_another_piece(pos, turn_player):
                     number_click = 1
                 else:
                     piece_selected = find_player(pos)
-                    pygame.display.update()
                     paths = piece_selected.path_piece()
-                    print(paths)
-                    # game_display.blit(puntero, paths[0])
-                    # game_display.blit(puntero, paths[1])
+                    refresh_paths(paths)
+                    number_click += 1
+            elif number_click == 2:
+                pos2 = pygame.mouse.get_pos()
+                if touch_another_piece(pos2, turn_player):
+                    number_click = 2
+                else:
+                    blocked_path1, blocked_path2 = blocked_paths(paths)
+                    tpos, tpos2 = true_pos(pos), true_pos(pos2)
+                    piece_selected.deselected_piece()
+                    piece_selected.move_piece(tpos2, tablero.move_squares, paths)
+                    refresh_movement(paths, tpos, piece_selected, blocked_path1, blocked_path2)
+                    turn_player += 1
+                    number_click = 1
+                
+
+                
 
                     
 
